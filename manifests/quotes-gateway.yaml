@@ -1,0 +1,55 @@
+# https://istio.io/docs/reference/config/networking/v1alpha3/gateway/
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: quotes-gateway
+  namespace: storage-quotes
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+
+---
+# https://istio.io/docs/reference/config/networking/v1alpha3/virtual-service/
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: quotes
+  namespace: storage-quotes
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - quotes-gateway
+  http:
+  - route:
+    - destination:
+        host: quotes-service
+        port:
+          number: 80
+    match:
+    - uri:
+        exact: /quotes
+
+---
+# https://istio.io/docs/reference/config/networking/v1alpha3/service-entry/#ServiceEntry
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: google-apis
+  namespace: storage-quotes
+spec:
+  hosts:
+  - "*.googleapis.com"
+  ports:
+  - number: 443
+    name: https
+    protocol: TLS
+  resolution: NONE
+  location: MESH_EXTERNAL

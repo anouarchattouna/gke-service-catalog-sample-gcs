@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: quotes-service
+  namespace: storage-quotes
+  labels:
+    app: quotes
+spec:
+  selector:
+    app: quotes
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quotes-deployment
+  namespace: storage-quotes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quotes
+  template:
+    metadata:
+      labels:
+        app: quotes
+    spec:
+      volumes:
+        # Make the 'gcp-iam-sa-credentials' secret available as volume
+        # 'google-cloud-key'.
+        - name: google-cloud-key
+          secret:
+            secretName: gcp-iam-sa-credentials
+      containers:
+        - name: quotes
+          image: bistov/quotes
+          volumeMounts:
+            # Mount the 'google-cloud-key' volume into the container file
+            # system.
+            - name: google-cloud-key
+              mountPath: /var/secrets/google
+          env:
+            # Pass the path to the private key JSON file from the mounted volume
+            # to the environment variable.
+            - name: "GOOGLE_APPLICATION_CREDENTIALS"
+              value: /var/secrets/google/privateKeyData
+            # The two environment variables below come from the 'telemetries-gcp-gcs-credentials'
+            # secret and, together, point at the Cloud Storage Bucket to use.
+            - name: "GOOGLE_CLOUD_STORAGE_PROJECT_ID"
+              valueFrom:
+                secretKeyRef:
+                  # Use the projectId value from the 'telemetries-gcp-gcs-credentials' secret created
+                  # as a result of binding to the Storage service instance.
+                  name: telemetries-gcp-gcs-credentials
+                  key: projectId
+            - name: "GOOGLE_CLOUD_STORAGE_BUCKET_ID"
+              valueFrom:
+                secretKeyRef:
+                  # Use the topicId value from the 'telemetries-gcp-gcs-credentials' secret created
+                  # as a result of binding to the Storage service instance.
+                  name: telemetries-gcp-gcs-credentials
+                  key: bucketId
+          ports:
+            - containerPort: 8080

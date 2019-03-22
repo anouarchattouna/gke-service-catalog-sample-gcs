@@ -1,0 +1,19 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: gcp-iam-sa-instance
+  namespace: storage-quotes
+  labels:
+    app.kubernetes.io/name: gcp-iam-sa-instance
+spec:
+  # This should match with a SERVICE EXTERNAL NAME
+  # in the list of available services.
+  clusterServiceClassExternalName: cloud-iam-service-account
+  # This should match with a PLAN EXTERNAL NAME
+  # in the list of available service plans.
+  clusterServicePlanExternalName: beta
+  parameters:
+    # The service account name length must be between 6 and 30 characters
+    # https://github.com/GoogleCloudPlatform/kubernetes-engine-samples/tree/master/service-catalog#application-service-account
+    accountId: google-cloud-services-sa
+    displayName: "A service account used to authenticate with all Google Cloud services"

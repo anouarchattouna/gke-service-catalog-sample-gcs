@@ -1,0 +1,20 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceBinding
+metadata:
+  name: quotes-gcp-gcs-binding
+  namespace: storage-quotes
+  labels:
+    app.kubernetes.io/name: quotes-gcp-gcs-binding
+spec:
+  instanceRef:
+    # The name of the service instance to 'bind to'. The act of binding will
+    # grant the service account specified below specific roles so that it can
+    # access the Storage service instance with desired privileges.
+    name: quotes-gcp-gcs-instance
+  secretName: quotes-gcp-gcs-credentials
+  parameters:
+    # The service account which should be granted the storage privileges.
+    # It is configured from the gcp-iam-sa
+    serviceAccount: google-cloud-services-sa
+    roles:
+    - roles/storage.objectAdmin

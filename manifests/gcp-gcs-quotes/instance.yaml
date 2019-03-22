@@ -1,0 +1,17 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: quotes-gcp-gcs-instance
+  namespace: storage-quotes
+  labels:
+    app.kubernetes.io/name: quotes-gcp-gcs-instance
+spec:
+  # This should match with a SERVICE EXTERNAL NAME
+  # in the list of available services.
+  clusterServiceClassExternalName: cloud-storage
+  # This should match with a PLAN EXTERNAL NAME
+  # in the list of available service plans.
+  clusterServicePlanExternalName: beta
+  parameters:
+    bucketId: quotes-gcp-gcs-instance-bucket
+    location: europe-west1

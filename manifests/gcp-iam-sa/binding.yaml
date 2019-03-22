@@ -1,0 +1,14 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceBinding
+metadata:
+  name: gcp-iam-sa-binding
+  namespace: storage-quotes
+  labels:
+    app.kubernetes.io/name: gcp-iam-sa-binding
+spec:
+  instanceRef:
+    # The name of the service instance to 'bind to'. The act of binding will
+    # grant the service account specified below specific roles so that it can
+    # access the Storage service instance with desired privileges.
+    name: gcp-iam-sa-instance
+  secretName: gcp-iam-sa-credentials
