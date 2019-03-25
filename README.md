@@ -20,7 +20,7 @@ Successful use of the sample requires:
 kubectl apply -f manifests/storage-quotes-namespace.yaml
 ```
 
-## Step 2: Provisioning Cloud Storage
+## Step 2: Provisioning Cloud IAM Service Account instance
 
 This sample application is using a single service account for authentication with all Google Cloud services.
 
@@ -34,18 +34,37 @@ The instance is provisioned when status is `Ready` : ```svcat get instances --na
 kubectl apply -f manifests/gcp-iam-sa/binding.yaml
 ```
 Wait for the binding to be `Ready` : ```svcat get bindings --namespace storage-quotes```
+* Once the instance and the binding are `Ready`, make sure to have the following secret:
+```
+kubectl get secrets -n storage-quotes
+NAME                               TYPE                                  DATA      AGE
+gcp-iam-sa-credentials             Opaque                                2         1h
+```
+## Step 3: Provisioning Cloud Storage instance
+
+* Create the cloud-storage istance
+```shell
+kubectl apply -f manifests/gcp-gcs-quotes/instance.yaml
+```
+The instance is provisioned when status is `Ready` : ```svcat get instances --namespace storage-quotes```
+* Create the binding to the cloud-storage istance
+```shell
+kubectl apply -f manifests/gcp-gcs-quotes/binding.yaml
+```
+Wait for the binding to be `Ready` : ```svcat get bindings --namespace storage-quotes```
 * Once the instance and the binding are `Ready`, make sure to have the following secrets:
 ```
 kubectl get secrets -n storage-quotes
 NAME                               TYPE                                  DATA      AGE
 gcp-iam-sa-credentials             Opaque                                2         1h
-quotes-gcp-gcs-credentials         Opaque                                3         1h                                                                                                                                                                                                                                        
+quotes-gcp-gcs-credentials         Opaque                                3         1h
 ```
-## Step 3: Deploy the application
+
+## Step 4: Deploy the application
 ```shell
 kubectl apply -f manifests/quotes-deployment.yaml
 ```
-## Step 3: Access the application
+## Step 5: Access the application
 Now that the application is up and running, we need to make the application accessible from outside of your Kubernetes cluster. An [Istio Gateway](https://istio.io/docs/concepts/traffic-management/#gateways) is used for this purpose.
 ```shell
 kubectl apply -f manifests/quotes-gateway.yaml
