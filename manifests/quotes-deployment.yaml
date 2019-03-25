@@ -46,21 +46,21 @@ spec:
             # to the environment variable.
             - name: "GOOGLE_APPLICATION_CREDENTIALS"
               value: /var/secrets/google/privateKeyData
-            # The two environment variables below come from the 'telemetries-gcp-gcs-credentials'
+            # The two environment variables below come from the 'quotes-gcp-gcs-credentials'
             # secret and, together, point at the Cloud Storage Bucket to use.
             - name: "GOOGLE_CLOUD_STORAGE_PROJECT_ID"
               valueFrom:
                 secretKeyRef:
-                  # Use the projectId value from the 'telemetries-gcp-gcs-credentials' secret created
+                  # Use the projectId value from the 'quotes-gcp-gcs-credentials' secret created
                   # as a result of binding to the Storage service instance.
-                  name: telemetries-gcp-gcs-credentials
+                  name: quotes-gcp-gcs-credentials
                   key: projectId
             - name: "GOOGLE_CLOUD_STORAGE_BUCKET_ID"
               valueFrom:
                 secretKeyRef:
-                  # Use the topicId value from the 'telemetries-gcp-gcs-credentials' secret created
+                  # Use the topicId value from the 'quotes-gcp-gcs-credentials' secret created
                   # as a result of binding to the Storage service instance.
-                  name: telemetries-gcp-gcs-credentials
+                  name: quotes-gcp-gcs-credentials
                   key: bucketId
           ports:
             - containerPort: 8080
