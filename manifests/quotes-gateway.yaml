@@ -22,6 +22,8 @@ kind: VirtualService
 metadata:
   name: quotes
   namespace: storage-quotes
+  labels:
+    app: quotes
 spec:
   hosts:
   - "*"
@@ -30,7 +32,7 @@ spec:
   http:
   - route:
     - destination:
-        host: quotes-service
+        host: quotes
         port:
           number: 80
     match:
@@ -38,18 +40,43 @@ spec:
         exact: /quotes
 
 ---
+# https://istio.io/docs/reference/config/networking/v1alpha3/virtual-service/
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: googleapis
+  namespace: storage-quotes
+  labels:
+    app: quotes
+spec:
+  hosts:
+    - '*.googleapis.com'
+  tls:
+    - match:
+        - port: 443
+          sniHosts:
+            - '*.googleapis.com'
+      route:
+        - destination:
+            host: '*.googleapis.com'
+            port:
+              number: 443
+
+---
 # https://istio.io/docs/reference/config/networking/v1alpha3/service-entry/#ServiceEntry
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
-  name: google-apis
+  name: googleapis
   namespace: storage-quotes
+  labels:
+    app: quotes
 spec:
   hosts:
   - "*.googleapis.com"
   ports:
   - number: 443
-    name: https
+    name: tls-googleapis
     protocol: TLS
   resolution: NONE
   location: MESH_EXTERNAL
