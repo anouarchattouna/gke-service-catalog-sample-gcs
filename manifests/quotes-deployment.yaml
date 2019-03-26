@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: quotes-service
+  name: quotes
   namespace: storage-quotes
   labels:
     app: quotes
@@ -15,7 +15,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: quotes-deployment
+  name: quotes
   namespace: storage-quotes
 spec:
   replicas: 1
@@ -26,6 +26,7 @@ spec:
     metadata:
       labels:
         app: quotes
+        version: v1
     spec:
       volumes:
         # Make the 'gcp-iam-sa-credentials' secret available as volume
